@@ -74,8 +74,7 @@ def photo_issuing_handler(call: CallbackQuery) -> None:
                 photos = request_to_api(url, parameters, pattern)
                 if photos is None:
                     raise NoSuitableValueError
-                # photos["hotelImages"] = photos["hotelImages"][:5]
-                urls = [i['baseUrl'].replace('{size}', 'w') for i in photos["hotelImages"]]
+                urls = [i['baseUrl'].format(size="w") for i in photos["hotelImages"]]
                 bot.send_media_group(chat_id=user_id,
                                      media=media_group_generation(urls, message_generation(i_hotel, call.from_user.id)))
             except NoSuitableValueError:
