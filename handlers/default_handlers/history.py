@@ -31,18 +31,20 @@ def history_issuing(call: CallbackQuery) -> None:
                          f"\n{i_hotel['address']}" \
                          f"\n{i_hotel['hotel_url']}"
             else:
+                command_result = f"\n\nКоманда: {command}" \
+                                 f"\nВремя вызова: {time}" \
+                                 f"\nРезультат выполнения: \n{hotels}"
+                bot.send_message(user_id, command_result, disable_web_page_preview=True)
+
                 hotel_num = 1
-                command_result += f"\n\nКоманда: {command}" \
-                                  f"\nВремя вызова: {time}" \
-                                  f"\nРезультат выполнения: \n{hotels}"
                 command, time = i_hotel['command'], i_hotel['time']
                 hotels = f"\n{hotel_num}. {i_hotel['hotel_name']}" \
                          f"\n{i_hotel['address']}" \
                          f"\n{i_hotel['hotel_url']}"
             hotel_num += 1
-        command_result += f"\n\nКоманда: {command}" \
-                          f"\nВремя вызова: {time}" \
-                          f"\nРезультат выполнения: \n{hotels}"
+        command_result = f"\n\nКоманда: {command}" \
+                         f"\nВремя вызова: {time}" \
+                         f"\nРезультат выполнения: \n{hotels}"
 
         bot.send_message(chat_id=user_id,
                          text=command_result,
