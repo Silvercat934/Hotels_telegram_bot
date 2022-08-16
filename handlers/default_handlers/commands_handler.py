@@ -27,5 +27,3 @@ def commands_handler(call: CallbackQuery) -> None:
         bot.send_message(chat_id=user_id, text=commands, reply_markup=menu_markup())
     elif call.data == '/lowprice' or '/highprice' or '/bestdeal':
         start(call)
-    elif call.data == '/reset':
-        reset(call)
