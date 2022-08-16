@@ -20,11 +20,11 @@ def destination_id_handler(call: CallbackQuery, search_term: str) -> None:
     bot.edit_message_text(chat_id=user_id, message_id=call.message.message_id, text='Ожидайте, идет обработка запроса.',
                           reply_markup=None)
     try:
-        hotels = hotels_founding(parameters)["results"]
+        hotels = hotels_founding(parameters)
     except ReadTimeout:
         bot.send_message(chat_id=user_id,
                          text='Продолжаю поиск.')
-        hotels = hotels_founding(parameters)["results"]
+        hotels = hotels_founding(parameters)
     except RequestException:
         bot.send_message(chat_id=user_id,
                          text='К сожалению произошла внутренняя ошибка. Попробуйте снова.')
@@ -34,7 +34,7 @@ def destination_id_handler(call: CallbackQuery, search_term: str) -> None:
                          text='По вашему запросу ничего не найдено. Попробуйте изменить параметры запроса.')
         reset(call)
     else:
-        hotels = hotels[:5]
+        hotels = hotels["results"][:5]
         hotels_info = list()
         time = get_parameter(user_id, 'time')
         for i_hotel in hotels:
@@ -50,13 +50,13 @@ def destination_id_handler(call: CallbackQuery, search_term: str) -> None:
             hotels_info.append((user_id, time, hotel_id, hotel_name,
                                 address, distance, cost, hotel_url))
         update_results(hotels_info)
-
-    bot.send_message(chat_id=user_id,
+        
+            bot.send_message(chat_id=user_id,
                      text=f"Спасибо за ожидание. Выберите дату заезда.",
                      reply_markup=calendar)
-    set_state(user_id, States.enter_arrival_date_state.value)
+            set_state(user_id, States.enter_arrival_date_state.value)
 
-
+            
 def hotels_founding(querystring: Dict[str, str]) -> dict:
     """Функция. Делает запрос к API в целях поиска отелей."""
 
