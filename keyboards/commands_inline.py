@@ -11,5 +11,4 @@ def menu_markup() -> InlineKeyboardMarkup:
     menu.add(InlineKeyboardButton(text='Топ-5 наиболее подходящих по цене, расстоянию', callback_data='/bestdeal'))
     menu.add(InlineKeyboardButton(text='История поиска', callback_data='/history'))
     menu.add(InlineKeyboardButton(text='Помощь', callback_data='/help'))
-    menu.add(InlineKeyboardButton(text='Сброс', callback_data='/reset'))
     return menu
