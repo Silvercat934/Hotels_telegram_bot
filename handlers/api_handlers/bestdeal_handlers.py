@@ -59,35 +59,41 @@ def prices_handler(call: CallbackQuery) -> None:
     condition_matches, hotels_info = list(), list()
 
     try:
-        hotels = hotels_founding(parameters)["results"]
+        hotels = hotels_founding(parameters)
     except ReadTimeout:
         bot.send_message(chat_id=user_id,
                          text='Продолжаю поиск.')
-        hotels = hotels_founding(parameters)["results"]
+        hotels = hotels_founding(parameters)
     except RequestException:
         bot.send_message(chat_id=user_id,
                          text='К сожалению произошла внутренняя ошибка. Попробуйте снова.')
 
-    for i_hotel in hotels:
-        distance = float(i_hotel.get('landmarks', [dict()])[0].get('distance', '0 км')[:-3])
-        if distance_from <= distance <= distance_to:
-            condition_matches.append(i_hotel)
-    hotels = condition_matches[:5]
+    if hotels is None:
+        bot.send_message(chat_id=user_id,
+                         text='По вашему запросу ничего не найдено. Попробуйте изменить параметры запроса.')
+        reset(call)
+    else:
+        hotels = hotels["results"]
+        for i_hotel in hotels:
+            distance = float(i_hotel.get('landmarks', [dict()])[0].get('distance', '0 км')[:-3])
+            if distance_from <= distance <= distance_to:
+                condition_matches.append(i_hotel)
+        hotels = condition_matches[:5]
 
-    for i_hotel in hotels:
-        hotel_id = i_hotel.get('id', 000000)
-        hotel_name = i_hotel.get('name', '')
-        address = translator_two.translate(f"{i_hotel.get('address', {}).get('streetAddress', '')},"
-                                           f"{i_hotel.get('address', {}).get('locality', '')}, "
-                                           f"{i_hotel.get('address', {}).get('countryName', '')}")
-        distance = i_hotel.get('landmarks', [{}])[0].get('distance', '0 км')
-        cost = str(i_hotel.get('ratePlan', {}).get('price', {}).get('exactCurrent', 0))
-        hotel_url = 'https://www.hotels.com/ho' + str(i_hotel.get('id', 000000))
-        hotels_info.append((user_id, time, hotel_id, hotel_name,
-                            address, distance, cost, hotel_url))
-    update_results(hotels_info)
+        for i_hotel in hotels:
+            hotel_id = i_hotel.get('id', 000000)
+            hotel_name = i_hotel.get('name', '')
+            address = translator_two.translate(f"{i_hotel.get('address', {}).get('streetAddress', '')},"
+                                               f"{i_hotel.get('address', {}).get('locality', '')},"
+                                               f"{i_hotel.get('address', {}).get('countryName', '')}")
+            distance = i_hotel.get('landmarks', [{}])[0].get('distance', '0 км')
+            cost = str(i_hotel.get('ratePlan', {}).get('price', {}).get('exactCurrent', 0))
+            hotel_url = 'https://www.hotels.com/ho' + str(i_hotel.get('id', 000000))
+            hotels_info.append((user_id, time, hotel_id, hotel_name,
+                                address, distance, cost, hotel_url))
+        update_results(hotels_info)
 
-    bot.send_message(chat_id=user_id,
-                     text='Необходимо выдать фото ?',
-                     reply_markup=photo_markup())
-    set_state(user_id, States.result_issuing_state.value)
+        bot.send_message(chat_id=user_id,
+                         text='Необходимо выдать фото ?',
+                         reply_markup=photo_markup())
+        set_state(user_id, States.result_issuing_state.value)
